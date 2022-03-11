@@ -15,10 +15,11 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
 
     uart_init();
 
-    uart_puts("Hello from debugger!\n");
+    debugger_print("Hello from debugger");
 
     // user program is wherever the bootloader would have put it
     // if we did not inject the debugger code
 
+    debugger_print("About to enter user code");
     branchto(target_dst); // jump to user code
 }

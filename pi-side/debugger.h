@@ -2,6 +2,13 @@
 
 typedef unsigned int uint32_t;
 
+void debugger_print(char *str) {
+    uart_puts("CS140EDB:");
+    uart_puts(str);
+    uart_puts("\n");
+    uart_flush_tx();
+}
+
 /**
  * @brief Called by debugger-start.S
  * 

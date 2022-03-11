@@ -45,12 +45,6 @@ int uart_getc(void);
 // put one byte on the uart
 void uart_putc(unsigned c);
 
-void uart_puts(char *s) {
-    while (*s) {
-        uart_putc(*s);
-    }
-}
-
 // returns -1 if no byte, the value otherwise.
 int uart_getc_async(void);
 
@@ -61,5 +55,15 @@ int uart_can_putc(void);
 
 // flush out the tx fifo
 void uart_flush_tx(void);
+
+
+void uart_puts(char *s) {
+    uart_flush_tx(); // probably overkill
+    while (*s) {
+        uart_putc(*s++);
+    }
+    uart_flush_tx(); // make sure everything is sent 
+}
+
 
 #endif
