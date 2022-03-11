@@ -1,18 +1,27 @@
+#include "debugger.h"
 
-typedef unsigned int uint32_t;
-
-#define ARMBASE 0x8000
-
-void move_user_program(void) {
-    extern unsigned *__user_len__;
-    unsigned user_len = *__user_len__ / sizeof(uint32_t);
-    uint32_t *user_code = __user_len__ + 1;
-    uint32_t *dest = (uint32_t *)ARMBASE;
+/**
+ * @brief Copies user program to the location it expects to be linked to
+ * 
+ * @param dst location user code should be copied
+ * @param src location containing size of user code and then user code
+ */
+void move_user_program(uint32_t *dst, uint32_t *src) {
+    // src is pointer to int containing length of user program
+    unsigned user_len = *src / sizeof(uint32_t);
+    // next word is start of user code
+    uint32_t *user_code = src + 1;
     for (unsigned i = 0; i < user_len; i++) {
-        dest[i] = user_code[i];
+        dst[i] = user_code[i];
     }
 }
 
-void notmain(void) {
-    move_user_program();
+/**
+ * @brief Called by start.S
+ * 
+ * @param target_dst 
+ * @param target_src 
+ */
+void notmain(uint32_t *target_dst, uint32_t *target_src) {
+    move_user_program(target_dst, target_src);
 }
