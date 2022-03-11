@@ -2,4 +2,4 @@
 *.elf
 *.list
 *.o
-!uart.o
+!support/*
