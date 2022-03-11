@@ -12,8 +12,8 @@ OCP = $(ARM)-objcopy
 CFLAGS = -O -Wall -nostdlib -nostartfiles -ffreestanding -march=armv6 -std=gnu99  -Wno-unused-variable -Wno-unused-function -I.
 ASFLAGS = --all-warnings -mcpu=arm1176jzf-s -march=armv6zk -I.
 
-MEMMAP := ./memmap
-START := ./start.o
+MEMMAP := ./debugger-memmap
+START := ./debugger-start.o
 
 DEPS := $(MEMMAP) $(wildcard ./*.h) ./Makefile 
 
