@@ -1,11 +1,5 @@
 #include "debugger.h"
 
-/**
- * @brief Copies user program to the location it expects to be linked to
- * 
- * @param dst location user code should be copied
- * @param src location containing size of user code and then user code
- */
 void move_user_program(uint32_t *dst, uint32_t *src) {
     // src is pointer to int containing length of user program
     unsigned user_len = *src / sizeof(uint32_t);
@@ -16,12 +10,16 @@ void move_user_program(uint32_t *dst, uint32_t *src) {
     }
 }
 
-/**
- * @brief Called by start.S
- * 
- * @param target_dst 
- * @param target_src 
- */
 void notmain(uint32_t *target_dst, uint32_t *target_src) {
     move_user_program(target_dst, target_src);
+
+    uart_init();
+
+    debugger_print("Hello from debugger");
+
+    // user program is wherever the bootloader would have put it
+    // if we did not inject the debugger code
+
+    debugger_print("About to enter user code");
+    branchto(target_dst); // jump to user code
 }

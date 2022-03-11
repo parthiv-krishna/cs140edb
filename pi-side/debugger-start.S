@@ -25,3 +25,7 @@ done:
     @ and we are at the place our linker expects us to be
     @ notmain(original_code_start, original_code_end)
     ldr pc, =notmain
+
+.globl branchto
+branchto:
+    bx r0
