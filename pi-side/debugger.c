@@ -1,18 +1,25 @@
+#include "debugger.h"
 
-typedef unsigned int uint32_t;
-
-#define ARMBASE 0x8000
-
-void move_user_program(void) {
-    extern unsigned *__user_len__;
-    unsigned user_len = *__user_len__ / sizeof(uint32_t);
-    uint32_t *user_code = __user_len__ + 1;
-    uint32_t *dest = (uint32_t *)ARMBASE;
+void move_user_program(uint32_t *dst, uint32_t *src) {
+    // src is pointer to int containing length of user program
+    unsigned user_len = *src / sizeof(uint32_t);
+    // next word is start of user code
+    uint32_t *user_code = src + 1;
     for (unsigned i = 0; i < user_len; i++) {
-        dest[i] = user_code[i];
+        dst[i] = user_code[i];
     }
 }
 
-void notmain(void) {
-    move_user_program();
+void notmain(uint32_t *target_dst, uint32_t *target_src) {
+    move_user_program(target_dst, target_src);
+
+    uart_init();
+
+    debugger_print("Hello from debugger");
+
+    // user program is wherever the bootloader would have put it
+    // if we did not inject the debugger code
+
+    debugger_print("About to enter user code");
+    branchto(target_dst); // jump to user code
 }

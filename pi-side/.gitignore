@@ -1,0 +1,5 @@
+*.bin
+*.elf
+*.list
+*.o
+!uart.o
