@@ -1,3 +1,5 @@
+#include "uart.h"
+
 typedef unsigned int uint32_t;
 
 /**
@@ -21,4 +23,5 @@ void move_user_program(uint32_t *dst, uint32_t *src);
  * 
  * @param addr address to branch to
  */
-void BRANCHTO(uint32_t *addr);
+void branchto(uint32_t *addr);
+

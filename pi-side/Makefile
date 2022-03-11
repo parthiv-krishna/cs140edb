@@ -1,6 +1,10 @@
 NAME = debugger
-OBJS = $(NAME).o
+OBJ = $(NAME).o
 TARGET = $(NAME).bin
+SUPPORT_OBJS = $(wildcard ./support/*.o)
+
+OBJS = $(OBJ) $(SUPPORT_OBJS)
+
 
 ARM = arm-none-eabi
 CC = $(ARM)-gcc
@@ -9,6 +13,7 @@ AS  = $(ARM)-as
 OD  = $(ARM)-objdump
 OCP = $(ARM)-objcopy
 
+# from cs140e repo
 CFLAGS = -O -Wall -nostdlib -nostartfiles -ffreestanding -march=armv6 -std=gnu99  -Wno-unused-variable -Wno-unused-function -I.
 ASFLAGS = --all-warnings -mcpu=arm1176jzf-s -march=armv6zk -I.
 
@@ -19,26 +24,30 @@ DEPS := $(MEMMAP) $(wildcard ./*.h) ./Makefile
 
 all: $(START) $(OBJS) $(TARGET)
 
+# create .o from .c or .S
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
 %.o: %.S $(DEPS)
 	$(CC) -c $(ASFLAGS) $< -o $@
 
-# rules to generate .elf->.list->.bin
+# create .elf
 %.elf: $(OBJS) $(MEMMAP) $(DEPS)
 	$(CC) $(CFLAGS) $(START) $(OBJS) -T $(MEMMAP) -o $@
 
+# convert .elf to .list
 %.list: %.elf
 	$(OD) -D  $< > $@
 
+# convert .list to .bin
 %.bin: %.list
 	$(OCP) $*.elf -O binary $*.bin
 
+# delete compile things
 clean:
-	rm -rf *.o *.bin *~ tags *.bin *.elf *.list *.img Makefile.bak 
-	@make -s -C ./libpi.small clean
+	rm -rf *.o *.bin *.elf *.list
 
-.PHONY: all clean  lib
+# these are actually commands not things to make
+.PHONY: all clean
 
-# stop make from deleting these suffix'd files.
+# make tries to delete intermediate results if you don't say they're precious
 .PRECIOUS: %.list %.elf

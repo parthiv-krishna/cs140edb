@@ -26,6 +26,6 @@ done:
     @ notmain(original_code_start, original_code_end)
     ldr pc, =notmain
 
-.globl BRANCHTO
-BRANCHTO:
+.globl branchto
+branchto:
     bx r0

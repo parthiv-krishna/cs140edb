@@ -1,6 +1,8 @@
 #ifndef __UART_H__
 #define __UART_H__
 
+#include "mini-rpi.h"
+
 // 2.1, p8
 // XXX: go through and do the bitfields for these.
 struct aux_periphs {
@@ -42,6 +44,12 @@ void uart_disable(void);
 int uart_getc(void);
 // put one byte on the uart
 void uart_putc(unsigned c);
+
+void uart_puts(char *s) {
+    while (*s) {
+        uart_putc(*s);
+    }
+}
 
 // returns -1 if no byte, the value otherwise.
 int uart_getc_async(void);

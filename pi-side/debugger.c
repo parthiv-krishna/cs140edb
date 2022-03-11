@@ -13,8 +13,12 @@ void move_user_program(uint32_t *dst, uint32_t *src) {
 void notmain(uint32_t *target_dst, uint32_t *target_src) {
     move_user_program(target_dst, target_src);
 
+    uart_init();
+
+    uart_puts("Hello from debugger!\n");
+
     // user program is wherever the bootloader would have put it
     // if we did not inject the debugger code
 
-    BRANCHTO(target_dst); // jump to user code
+    branchto(target_dst); // jump to user code
 }
