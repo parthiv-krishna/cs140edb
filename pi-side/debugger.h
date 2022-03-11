@@ -26,9 +26,9 @@ void notmain(uint32_t *target_dst, uint32_t *target_src);
 void move_user_program(uint32_t *dst, uint32_t *src);
 
 /**
- * @brief Branches to an address; does not return
+ * @brief Switches to user mode, clears registers, branches to code. does not return
  * 
- * @param addr address to branch to
+ * @param code address to branch to
  */
-void branchto(uint32_t *addr);
+void enter_user_mode(uint32_t *code);
 

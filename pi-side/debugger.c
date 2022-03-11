@@ -1,5 +1,7 @@
 #include "debugger.h"
 
+#define USER_MODE 0b10000
+
 void move_user_program(uint32_t *dst, uint32_t *src) {
     // src is pointer to int containing length of user program
     unsigned user_len = *src / sizeof(uint32_t);
@@ -21,5 +23,12 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
     // if we did not inject the debugger code
 
     debugger_print("About to enter user code");
-    branchto(target_dst); // jump to user code
+
+    // setup breakpoint at target_dst
+
+    // flush regs, enter user mode
+
+    // prefetch flush
+
+    enter_user_mode(target_dst); // setup user mode and branch to target
 }
