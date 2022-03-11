@@ -3,7 +3,7 @@ use std::io::Result;
 use std::os::unix::prelude::AsRawFd;
 
 use termios::os::target::CRTSCTS;
-use termios::{Termios, cfsetspeed, IGNBRK, VMIN, PARENB, CSTOPB, CSIZE, CREAD, CLOCAL, IXON, IXOFF, IXANY, ICANON, ECHO, ECHOE, ISIG, OPOST, CS8, TCSANOW, tcsetattr};
+use termios::{Termios, cfsetspeed, IGNBRK, VMIN, PARENB, CSTOPB, CSIZE, CREAD, CLOCAL, IXON, IXOFF, IXANY, ICANON, ECHO, ECHOE, ISIG, OPOST, CS8, TCSANOW, tcsetattr, VTIME};
 
 const DEV_PATH: &str = "/dev/";
 
@@ -32,7 +32,8 @@ pub fn setup_tty(file: &File) -> Result<()> {
     tty.c_lflag = 0;                // no signaling chars, no echo,
     // no canonical processing
     tty.c_oflag = 0;                // no remapping, no delays
-    tty.c_cc[VMIN]  = 1;            // read doesn't block
+    tty.c_cc[VMIN]  = 0;            // read doesn't block
+    tty.c_cc[VTIME] = 2;
 
 	/*
 	 * Setup TTY for 8n1 mode, used by the pi UART.

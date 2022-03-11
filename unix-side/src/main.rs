@@ -14,7 +14,6 @@ fn create_file_buffer<P: AsRef<Path>>(in_file: P) -> io::Result<Vec<u8>> {
 
     let mut buf = debugger_bin.to_vec();
     buf.extend(&u32::try_from(len).expect("File too large").to_le_bytes());
-    let mut buf = Vec::new();
     in_bin.read_to_end(&mut buf)?;
 
     Ok(buf)
@@ -36,5 +35,10 @@ fn main() {
 
     simple_boot(&mut tty, &buf).expect("Failed to send code to pi");
     println!("Finished loading program");
-    pi_echo(&mut tty).expect("Failed to echo stdin");
+    let res = pi_echo(&mut tty).expect("Failed to echo stdin");
+    if res {
+        println!("Saw done.");
+    } else {
+        println!("Pi disconnected");
+    }
 }

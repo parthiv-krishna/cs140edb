@@ -28,13 +28,21 @@ const BAD_CODE_CKSUM: u32 = 0xfeedface;
 
 fn get8(tty: &mut File) -> io::Result<u8> {
     let mut buf = [0; 1];
-    tty.read_exact(&mut buf)?;
-    Ok(u8::from_le_bytes(buf))
+    while tty.read(&mut buf)? == 0 {   
+    }
+    Ok(buf[0])
+}
+
+fn read_exact(tty: &mut File, buf: &mut [u8]) -> io::Result<()> {
+    for i in 0..buf.len() {
+        buf[i] = get8(tty)?;
+    }
+    Ok(())
 }
 
 fn get32(tty: &mut File) -> io::Result<u32> {
     let mut buf = [0; 4];
-    tty.read_exact(&mut buf)?;
+    read_exact(tty, &mut buf)?;
     let res = u32::from_le_bytes(buf);
     // println!("GET32: {:X}", res);
     Ok(res)
@@ -56,7 +64,7 @@ fn process_op(tty: &mut File) -> io::Result<u32> {
             panic!("Recieved susiciously long print string!");
         }
         let mut buf = vec![0; len];
-        tty.read_exact(&mut buf)?;
+        read_exact(tty, &mut buf)?;
         let mut s = String::from_utf8(buf).expect("Invalid string recieved");
         match s.chars().last() {
             Some(c) if c == '\n' => {
@@ -78,6 +86,10 @@ pub fn simple_boot(tty: &mut File, buf: &[u8]) -> io::Result<()> {
     let crc = crc32(buf, 0);
     println!("cs140edb: sending {} bytes, crc={:x}", buf.len(), crc);
     println!("waiting for start");
+
+    // loop {
+    //     println!("{:X}", get8(tty)?);
+    // }
 
     loop {
         let op = process_op(tty)?;
