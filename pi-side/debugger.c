@@ -1,5 +1,14 @@
 #include "debugger.h"
 
+void debugger_shell(uint32_t *regs) {
+    while (1) {
+        char line[512];
+        uart_putc('>');
+        uart_gets(line, sizeof(line));
+    }
+}
+
+
 void move_user_program(uint32_t *dst, uint32_t *src) {
     // src is pointer to int containing length of user program
     unsigned user_len = *src / sizeof(uint32_t);

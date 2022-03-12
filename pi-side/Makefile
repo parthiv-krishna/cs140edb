@@ -1,9 +1,14 @@
 NAME = debugger
 OBJ = $(NAME).o
 TARGET = $(NAME).bin
+SRC = $(wildcard *.c)
+ASM_SRC = $(wildcard *.S)
 SUPPORT_OBJS = $(wildcard ./support/*.o)
 
-OBJS = $(OBJ) $(SUPPORT_OBJS)
+OBJS = $(SRC:.c=.o) $(ASM_SRC:.S=.o) $(SUPPORT_OBJS)
+
+$(info $(SRC))
+$(info $(OBJS))
 
 
 ARM = arm-none-eabi
@@ -22,7 +27,7 @@ START := ./debugger-start.o
 
 DEPS := $(MEMMAP) $(wildcard ./*.h) ./Makefile 
 
-all: $(START) $(OBJS) $(TARGET)
+all: $(OBJS) $(TARGET)
 
 # create .o from .c or .S
 %.o: %.c $(DEPS)
@@ -32,7 +37,7 @@ all: $(START) $(OBJS) $(TARGET)
 
 # create .elf
 %.elf: $(OBJS) $(MEMMAP) $(DEPS)
-	$(CC) $(CFLAGS) $(START) $(OBJS) -T $(MEMMAP) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -T $(MEMMAP) -o $@
 
 # convert .elf to .list
 %.list: %.elf

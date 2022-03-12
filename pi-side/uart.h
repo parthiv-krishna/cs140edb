@@ -56,14 +56,10 @@ int uart_can_putc(void);
 // flush out the tx fifo
 void uart_flush_tx(void);
 
+int uart_gets(char *in, unsigned nbytes);
 
-void uart_puts(char *s) {
-    uart_flush_tx(); // probably overkill
-    while (*s) {
-        uart_putc(*s++);
-    }
-    uart_flush_tx(); // make sure everything is sent 
-}
+
+void uart_puts(char *s);
 
 
 #endif
