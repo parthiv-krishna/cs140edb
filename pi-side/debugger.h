@@ -1,13 +1,11 @@
+#ifndef _DEBUGGER_H_
+#define _DEBUGGER_H_
+
 #include "uart.h"
 
 typedef unsigned int uint32_t;
 
-void debugger_print(char *str) {
-    uart_puts("CS140EDB:");
-    uart_puts(str);
-    uart_puts("\n");
-    uart_flush_tx();
-}
+void debugger_print(char *str);
 
 /**
  * @brief Called by debugger-start.S
@@ -32,3 +30,6 @@ void move_user_program(uint32_t *dst, uint32_t *src);
  */
 void enter_user_mode(uint32_t *code);
 
+void debugger_shell(uint32_t *regs);
+
+#endif
