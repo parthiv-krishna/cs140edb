@@ -5,7 +5,7 @@
 
 void init_interupts();
 
-void undefined_intstruction_vector(uint32_t *regs);
+void undefined_instruction_vector(uint32_t *regs);
 void prefetch_abort_vector(uint32_t *regs);
 void data_abort_vector(uint32_t *regs);
 void interrupt_vector(uint32_t *regs);
