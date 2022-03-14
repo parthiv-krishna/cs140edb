@@ -7,10 +7,6 @@ SUPPORT_OBJS = $(wildcard ./support/*.o)
 
 OBJS = $(SRC:.c=.o) $(ASM_SRC:.S=.o) $(SUPPORT_OBJS)
 
-$(info $(SRC))
-$(info $(OBJS))
-
-
 ARM = arm-none-eabi
 CC = $(ARM)-gcc
 LD  = $(ARM)-ld

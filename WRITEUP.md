@@ -12,3 +12,5 @@ If it was not copied there, then any absolute ptrs would be broken
 KEEP(*(.text.boot))  
 
 uart_init nukes FIFO --> need need to flush tx before starting user code 
+
+Rust emphasizes cross platform. Makes things like terminal IO more difficult
