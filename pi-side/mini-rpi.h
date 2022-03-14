@@ -11,5 +11,6 @@ uint32_t get32(const volatile void *addr);
 uint32_t GET32(uint32_t addr);
 
 void dev_barrier(void);
+void prefetch_flush(void);
 
 #endif // MINI_RPI_H

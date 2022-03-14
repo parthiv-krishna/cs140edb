@@ -1,9 +1,8 @@
 #ifndef _DEBUGGER_H_
 #define _DEBUGGER_H_
 
+#include "mini-rpi.h"
 #include "uart.h"
-
-typedef unsigned int uint32_t;
 
 void debugger_print(char *str);
 
