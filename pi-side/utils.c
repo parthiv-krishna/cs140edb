@@ -49,7 +49,7 @@ int uart_gets(char *in, unsigned nbytes) {
     return i;
 }
 
-void uart_puts(char *s) {
+void uart_puts(const char *s) {
     uart_flush_tx(); // probably overkill
     while (*s) {
         uart_putc(*s++);

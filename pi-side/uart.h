@@ -59,7 +59,7 @@ void uart_flush_tx(void);
 int uart_gets(char *in, unsigned nbytes);
 
 
-void uart_puts(char *s);
+void uart_puts(const char *s);
 
 
 #endif
