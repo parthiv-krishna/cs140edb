@@ -48,7 +48,7 @@ const CRC32_TAB: [u32; 256] = [
 pub fn crc32(buf: &[u8], mut crc: u32) -> u32 {
     crc = !crc;
 
-    buf.into_iter().map(|&x| x as u32).fold(crc, |crc, p| {
+    crc = buf.into_iter().map(|&x| x as u32).fold(crc, |crc, p| {
         CRC32_TAB[((crc ^ p) as usize) % CRC32_TAB.len()] ^ (crc >> 8)
     });
 
