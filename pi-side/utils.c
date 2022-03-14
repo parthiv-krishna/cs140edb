@@ -63,3 +63,12 @@ void debugger_print(char *str) {
     uart_puts("\n");
     uart_flush_tx();
 }
+
+void panic(const char *msg) {
+    uart_puts("PANIC: `");
+    uart_puts(msg);
+    uart_puts("` was not true!\n");
+    uart_flush_tx();
+    while(1);
+    // does not return
+}
