@@ -13,7 +13,9 @@ void init_interrupts() {
 
 
 void undefined_instruction_vector(uint32_t *regs) {
-    debugger_print("undefined instruction");
+    debugger_print("Undefined instruction abort at pc=");
+    uart_printf('x', regs[15]);
+    uart_putc('\n');
     debugger_shell(regs);
 }
 
@@ -64,5 +66,6 @@ void interrupt_vector(uint32_t *regs) {
 }
 
 void unexpected_interrupt(uint32_t *regs) {
-    debugger_println("unexpected interrupt. this really shouldn't happen");
+    debugger_println("Unexpected interrupt. This really shouldn't happen.");
+    debugger_shell(regs);
 }

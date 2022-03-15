@@ -37,11 +37,14 @@ void uart_printf(char fmt, uint32_t val) {
     int base = 10;
     switch (fmt) {
     case 's':
+        uart_putc('"');
         uart_puts((char *) val);
+        uart_putc('"');
         break;
     case 'c':
         uart_putc((char) val);
         break;
+    case 0:
     case 'x':
         uart_puts("0x");
         uart_print_int(val, 16);
