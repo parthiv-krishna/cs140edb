@@ -67,31 +67,6 @@ int parse_int(char *expr) {
     return num * sign;
 }
 
-int parse_hex(char *expr) {
-    int sign = 1;
-    int base = 16;
-    if (expr[0] == '-') {
-        sign = -1;
-        expr++;
-    }
-    if (expr[0] == '0') {
-        if (expr[1] == 'x') {
-            base = 16;
-            expr += 2;
-        } else if (expr[1] == 'b') {
-            base = 2;
-            expr += 2;
-        }
-    }
-    uint32_t num = 0;
-    int next;
-    while ((next = find_in_s(expr[0], HEX)) != -1) {
-        num = num * base + next;
-        expr++;
-    }
-    return num * sign;
-}
-
 uint32_t parse_expr(char *expr, int get_addr, uint32_t *regs) {
     int n_indirects = 0; // if not addr, deref at least once
     for (; *expr == '*'; expr++) {

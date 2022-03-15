@@ -31,7 +31,7 @@ int process_input(char *line, uint32_t *regs) {
             break;
         case 'b':
             expr = parse_token(&line);
-            uint32_t *break_addr = (uint32_t *) parse_hex(expr);
+            uint32_t *break_addr = (uint32_t *) parse_expr(expr, 0, regs);
             if (breakpt_set(break_addr)) {
                 debugger_print("Successfully set breakpoint #");
                 int id = breakpt_get_id(break_addr);
@@ -46,7 +46,7 @@ int process_input(char *line, uint32_t *regs) {
             break;
         case 'w':
             expr = parse_token(&line);
-            uint32_t *watch_addr = (uint32_t *)parse_hex(expr);
+            uint32_t *watch_addr = (uint32_t *)parse_expr(expr, 0, regs);
             if (watchpt_set(watch_addr)) {
                 debugger_print("Successfully set watchpoint #");
                 int id = watchpt_get_id(watch_addr);

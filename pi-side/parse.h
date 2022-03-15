@@ -11,8 +11,6 @@ int find_in_s(char c, const char *s);
 
 int parse_int(char *expr);
 
-int parse_hex(char *expr);
-
 uint32_t parse_expr(char *expr, int get_addr, uint32_t *regs);
 
 #endif
