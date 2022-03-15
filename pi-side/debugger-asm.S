@@ -1,4 +1,4 @@
-#define INT_STACK 0x70000000 // todo: change this
+#define INT_STACK 0x9000000 // todo: change this
 
 #define MK_TRAMPOLINE(offset, function) \
     sub lr, lr, offset; \
@@ -9,7 +9,6 @@
     mov r0, sp; \
     mrs r1, spsr; \
     str r1, [sp, #(16 * 4)]; @ store spsr at array[16] \
-    mov r2, lr; \
     bl function; \
     ldmia sp, {r0-r15}^
 

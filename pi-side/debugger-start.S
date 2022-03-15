@@ -24,6 +24,7 @@ done:
     @ now r1 contains original_code_end
     @ and we are at the place our linker expects us to be
     @ notmain(original_code_start, original_code_end)
+    mov sp, #0x9000000
     ldr pc, =notmain
 
 .globl branchto
@@ -33,7 +34,7 @@ branchto:
 .globl enter_user_mode
 enter_user_mode:
 
-    cps 0b10000 @ user mode
+    cpsie ia, 0b10000 @ user mode, interrupts on (maybe need aborts?)
     mov r1, #0
     mcr p15, 0, r1, c7, c5, 4 @ prefetch flush
 

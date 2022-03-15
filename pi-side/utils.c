@@ -77,6 +77,7 @@ void panic(const char *msg) {
 }
 
 void rpi_reboot(void) {
+    uart_flush_tx();
     // is there a way to speed this up?
     const int PM_RSTC = 0x2010001c;
     const int PM_WDOG = 0x20100024;
