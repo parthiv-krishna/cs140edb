@@ -56,10 +56,35 @@ int uart_can_putc(void);
 // flush out the tx fifo
 void uart_flush_tx(void);
 
-int uart_gets(char *in, unsigned nbytes);
+////////////////////
+// uart-helpers.c //
+////////////////////
 
+int uart_gets(char *in, unsigned nbytes);
 
 void uart_puts(const char *s);
 
+void debugger_print(const char *str);
+void debugger_println(const char *str);
+
+static const char *HEX = "0123456789abcdef";
+// inline so we can use mod
+static inline void uart_print_int(uint32_t val, int base) {
+    char buf[32];
+    int msd = 0;
+    for (int i = 0; i < sizeof(buf); i++) {
+        int next = val % base;
+        if (next != 0) {
+            msd = i;
+        }
+        buf[i] = HEX[next];
+        val /= base;
+    }
+    for (int i = msd; i >= 0; i--) {
+        uart_putc(buf[i]);
+    }
+}
+
+void uart_printf(char fmt, uint32_t val);
 
 #endif

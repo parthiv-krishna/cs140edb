@@ -5,10 +5,9 @@
 #include "uart.h"
 #include "interrupts.h"
 #include "breakpt-watchpt.h"
+#include "parse.h"
 
-void debugger_print(char *str);
-void debugger_println(char *str);
-
+#define USER_MODE 0b10000
 
 /**
  * @brief Called by debugger-start.S
@@ -35,5 +34,7 @@ void enter_user_mode(uint32_t *code);
 
 // main REPL
 void debugger_shell(uint32_t *regs);
+
+int process_input(char *line, uint32_t *regs);
 
 #endif
