@@ -3,6 +3,8 @@
 
 #include "mini-rpi.h"
 #include "uart.h"
+#include "interrupts.h"
+#include "breakpt-watchpt.h"
 
 void debugger_print(char *str);
 

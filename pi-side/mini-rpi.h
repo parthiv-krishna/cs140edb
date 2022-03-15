@@ -18,7 +18,7 @@ void panic(const char* msg);
 
 #define assert(should_be_true)              \
             do {                            \
-                if (!should_be_true) {      \
+                if (!(should_be_true)) {      \
                     panic(#should_be_true); \
                 }                           \
             } while (0);
