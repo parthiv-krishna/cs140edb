@@ -26,6 +26,7 @@ SECTIONS
         . = ALIGN(8);
         __bss_end__ = .;
         . = ALIGN(8);
+        QUAD(0xdeadbeeffeedface)
         __prog_end__ = .;
     }
     /* end of code */

@@ -10,7 +10,7 @@ use cs140edb::tty::{find_tty_device_file, setup_tty};
 fn create_file_buffer<P: AsRef<Path>>(in_file: P) -> io::Result<Vec<u8>> {
     let debugger_bin = include_bytes!("../../pi-side/debugger.bin");
     let mut in_bin = File::open(&in_file)?;
-    let len: u64 = in_bin.metadata()?.len();
+    let len = in_bin.metadata()?.len();
 
     let mut buf = debugger_bin.to_vec();
     buf.extend(&u32::try_from(len).expect("File too large").to_le_bytes());
