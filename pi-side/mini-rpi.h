@@ -3,6 +3,8 @@
 
 typedef unsigned int uint32_t;
 
+#define NULL 0
+
 
 void put32(volatile void *addr, uint32_t v);
 void PUT32(uint32_t addr, uint32_t v);

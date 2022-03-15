@@ -15,20 +15,20 @@ void undefined_instruction_vector(uint32_t *regs) {
 }
 
 void prefetch_abort_vector(uint32_t *regs) {
-    debugger_print("breakpoint triggered? or single step");
+    debugger_println("breakpoint triggered? or single step");
     debugger_shell(regs);
 }
 
 void data_abort_vector(uint32_t *regs) {
-    debugger_print("watchpoint triggered");
+    debugger_println("watchpoint triggered");
     debugger_shell(regs);
 }
 
 void interrupt_vector(uint32_t *regs) {
-    debugger_print("possibly interrupt line?");
+    debugger_println("possibly interrupt line?");
     debugger_shell(regs);
 }
 
 void unexpected_interrupt(uint32_t *regs) {
-    debugger_print("unexpected interrupt. this really shouldn't happen");
+    debugger_println("unexpected interrupt. this really shouldn't happen");
 }

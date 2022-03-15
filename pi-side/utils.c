@@ -60,7 +60,11 @@ void uart_puts(const char *s) {
 void debugger_print(char *str) {
     uart_puts("CS140EDB:");
     uart_puts(str);
-    uart_puts("\n");
+}
+
+void debugger_println(char *str) {
+    debugger_print(str);
+    uart_putc('\n');
     uart_flush_tx();
 }
 

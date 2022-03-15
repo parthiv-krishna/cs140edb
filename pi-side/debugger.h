@@ -5,6 +5,8 @@
 #include "uart.h"
 
 void debugger_print(char *str);
+void debugger_println(char *str);
+
 
 /**
  * @brief Called by debugger-start.S
@@ -29,6 +31,7 @@ void move_user_program(uint32_t *dst, uint32_t *src);
  */
 void enter_user_mode(uint32_t *code);
 
+// main REPL
 void debugger_shell(uint32_t *regs);
 
 #endif

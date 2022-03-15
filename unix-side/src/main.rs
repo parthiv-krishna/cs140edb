@@ -35,7 +35,7 @@ fn main() {
 
     simple_boot(&mut tty, &buf).expect("Failed to send code to pi");
     println!("Finished loading program");
-    if pi_echo(&mut tty) {
+    if let Err(_) = pi_echo(&mut tty) {
         println!("Saw done.");
     } else {
         println!("Pi disconnected");

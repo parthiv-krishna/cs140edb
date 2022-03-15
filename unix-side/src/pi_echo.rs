@@ -3,7 +3,7 @@ use std::io::{ self, Write, Read, stdout, stdin};
 use std::thread;
 use std::sync::mpsc::{SyncSender, sync_channel};
 
-pub fn pi_echo(tty: &mut File) -> bool {
+pub fn pi_echo(tty: &mut File) -> io::Result<()> {
     let mut output = stdout();
     let mut buf = [0; 64];
 
@@ -11,20 +11,15 @@ pub fn pi_echo(tty: &mut File) -> bool {
 
     thread::spawn(move || read_stdin(sender));
     loop {
-        let n = match tty.read(&mut buf) {
-            Ok(x) => x,
-            Err(_) => return false,
-        };
+        let n = tty.read(&mut buf)?;
         output.write_all(&buf[0..n]).expect("Failed to write to stdout");
         output.flush().expect("Failed to write to stdout");
         // TODO: Look for DONE!!!
         for line in receiver.try_iter() {
-            if let Err(_) = tty.write_all(line.as_bytes()) {
-                return false
-            }
+            tty.write_all(line.as_bytes())?;
         }
     }
-    // Ok(true)
+    // Ok(())
 }
 
 fn read_stdin(sender: SyncSender<String>) {
