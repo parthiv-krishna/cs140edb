@@ -28,4 +28,8 @@ void breakpt_disable(uint32_t *addr);
 
 void watchpt_disable(uint32_t *addr);
 
+void breakpt_singlestep_start(uint32_t caller_pc);
+
+void breakpt_singlestep_stop(void);
+
 #endif // BREAKPOINT_WATCHPOINT_H

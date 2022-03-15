@@ -6,6 +6,7 @@ int process_input(char *line, uint32_t *regs) {
     char *expr;
     switch (cmd[0]) {
         case 'c':
+            breakpt_singlestep_stop();
             return 1;
         case 'p':;
             char format = line[1];
@@ -58,6 +59,9 @@ int process_input(char *line, uint32_t *regs) {
             uart_putc('\n');
             watchpt_print_active();
             break;
+        case 's':
+            breakpt_singlestep_start(regs[15]);
+            return 1;
         case 'q':
             debugger_println("DONE!!!");
             rpi_reboot();

@@ -81,8 +81,7 @@ int breakpt_set(uint32_t *addr) {
 // set a watchpoint on <addr>
 int watchpt_set(uint32_t *addr) {
     int id = find_first_available(watchpts_mask);
-    // max reserved for nullptr
-    if (id >= WATCHPT_MAX) {
+    if (id > WATCHPT_MAX) {
         return 0;
     }
     watchpt_set_helper(id, addr);
@@ -107,4 +106,12 @@ void watchpt_disable(uint32_t *addr) {
     }
     cp14_wcr_disable(id);
     watchpts_mask = bit_clr(watchpts_mask, id);
+}
+
+void breakpt_singlestep_start(uint32_t caller_pc) {
+    breakpt_mismatch_set(BREAKPT_MAX, caller_pc);
+}
+
+void breakpt_singlestep_stop(void) {
+    breakpt_mismatch_stop(BREAKPT_MAX);
 }

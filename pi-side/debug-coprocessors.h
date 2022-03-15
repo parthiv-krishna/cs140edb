@@ -62,7 +62,7 @@ void cp14_bcr_disable(unsigned id);
 
 void breakpt_mismatch_start(unsigned id);
 
-void breakpt_mismatch_start(unsigned id);
+void breakpt_mismatch_stop(unsigned id);
 
 void breakpt_mismatch_set(unsigned id, uint32_t addr);
 
