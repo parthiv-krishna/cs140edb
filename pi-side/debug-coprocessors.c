@@ -399,3 +399,19 @@ void watchpt_set_helper(unsigned id, uint32_t *addr) {
 
     assert(cp14_wcr_is_enabled(id));
 }
+
+uint32_t *breakpt_addr(unsigned id) {
+    return cp14_bvr_get[id]();
+}
+
+int breakpt_is_active(unsigned id) {
+    return cp14_bcr_is_enabled(id);
+}
+
+uint32_t *watchpt_addr(unsigned id) {
+    return cp14_wvr_get[id]();
+}
+
+int watchpt_is_active(unsigned id) {
+    return cp14_wcr_is_enabled(id);
+}
