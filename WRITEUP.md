@@ -14,3 +14,5 @@ KEEP(*(.text.boot))
 uart_init nukes FIFO --> need need to flush tx before starting user code 
 
 Rust emphasizes cross platform. Makes things like terminal IO more difficult
+
+Objcopy might not make the .bin big enough for all the labels to fit inside it. This is bad if you assume the end of the file will be the location of a symbol at the end of the linker script

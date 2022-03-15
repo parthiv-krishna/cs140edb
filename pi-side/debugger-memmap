@@ -25,9 +25,11 @@ SECTIONS
         *(COMMON)
         . = ALIGN(8);
         __bss_end__ = .;
-        . = ALIGN(8);
-        QUAD(0xdeadbeeffeedface)
+        LONG(0xfeedbeef)
+        . = ALIGN(4);
         __prog_end__ = .;
+    }
+    .fill : {
     }
     /* end of code */
 }
