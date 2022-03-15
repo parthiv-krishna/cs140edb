@@ -41,6 +41,38 @@ void handle_watchpt(uint32_t *watch_addr) {
 }
 
 
+void handle_delete(char type, unsigned int id) {
+    if (type == 'b') {
+        if (id >= BREAKPT_MAX) {
+            debugger_print("Provided ID is too large");
+            return;
+        }
+        uint32_t *addr = breakpt_addr(id);
+        breakpt_disable(addr);
+        debugger_print("Deleted breakpoint #");
+        uart_printf('d', id);
+        uart_puts(" at pc=");
+        uart_printf('x', addr);
+        uart_putc('\n');
+    } else if (type == 'w') {
+        if (id > WATCHPT_MAX) {
+            debugger_print("Provided ID is too large");
+            return;
+        }
+        uint32_t *addr = watchpt_addr(id);
+        watchpt_disable(addr);
+        debugger_print("Deleted watchpoint #");
+        uart_printf('d', id);
+        uart_puts(" at ");
+        uart_printf('x', addr);
+        uart_putc('\n');
+    } else {
+        debugger_print("Unknown delete command `");
+        uart_printf('c', type);
+        uart_puts("`. Choose b or w");
+    }
+}
+
 void list_pts(char c) {
     switch (c) {
         case 'b':
@@ -106,6 +138,10 @@ int process_input(char *line, uint32_t *regs) {
             rpi_reboot();
         case 'l':
             list_pts(cmd[1]);
+            break;
+        case 'd':
+            expr = parse_token(&line);
+            handle_delete(expr[0], expr[1] - '0');
             break;
         default:
             debugger_println("Invalid command. Use 'h' for a list of commands");
