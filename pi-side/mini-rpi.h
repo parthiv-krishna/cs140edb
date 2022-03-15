@@ -13,6 +13,7 @@ uint32_t GET32(uint32_t addr);
 void dev_barrier(void);
 void prefetch_flush(void);
 
+void rpi_reboot(void);
 void panic(const char* msg);
 
 #define assert(should_be_true)              \
