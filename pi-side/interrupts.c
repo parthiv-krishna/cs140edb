@@ -10,7 +10,6 @@ void init_interrupts() {
     void *result = 0;
     asm volatile ("MRC p15, 0, %0, c12, c0, 0" : "=r" (result) : :);
     assert(result == int_table);
-    uart_print_int(int_table, 16);
 }
 
 

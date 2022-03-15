@@ -49,7 +49,7 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst
-    breakpt_set0(target_dst);
+    breakpt_set(target_dst);
 
     prefetch_flush();
 
