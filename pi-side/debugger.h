@@ -1,9 +1,8 @@
 #ifndef _DEBUGGER_H_
 #define _DEBUGGER_H_
 
+#include "mini-rpi.h"
 #include "uart.h"
-
-typedef unsigned int uint32_t;
 
 void debugger_print(char *str);
 
@@ -24,11 +23,11 @@ void notmain(uint32_t *target_dst, uint32_t *target_src);
 void move_user_program(uint32_t *dst, uint32_t *src);
 
 /**
- * @brief Branches to an address; does not return
+ * @brief Switches to user mode, clears registers, branches to code. does not return
  * 
- * @param addr address to branch to
+ * @param code address to branch to
  */
-void branchto(uint32_t *addr);
+void enter_user_mode(uint32_t *code);
 
 void debugger_shell(uint32_t *regs);
 

@@ -9,7 +9,7 @@ void init_interrupts() {
 }
 
 
-void undefined_intstruction_vector(uint32_t *regs) {
+void undefined_instruction_vector(uint32_t *regs) {
     debugger_print("undefined instruction");
     debugger_shell(regs);
 }

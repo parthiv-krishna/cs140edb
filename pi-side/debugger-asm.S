@@ -25,7 +25,7 @@ _interrupt_table:
     b interrupt_asm
 
 undefined_instruction_asm:
-    MK_TRAMPOLINE(#4, undefined_intstruction_vector)
+    MK_TRAMPOLINE(#4, undefined_instruction_vector)
 
 prefetch_abort_asm:
     MK_TRAMPOLINE(#4, prefetch_abort_vector)

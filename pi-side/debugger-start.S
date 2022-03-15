@@ -29,3 +29,29 @@ done:
 .globl branchto
 branchto:
     bx r0
+
+.globl enter_user_mode
+enter_user_mode:
+
+    cps 0b10000 @ user mode
+    mov r1, #0
+    mcr p15, 0, r1, c7, c5, 4 @ prefetch flush
+
+    @ Zero registers
+    mov r1, #0
+    mov r2, #0
+    mov r3, #0
+    mov r4, #0
+    mov r5, #0
+    mov r6, #0
+    mov r7, #0
+    mov r8, #0
+    mov r9, #0
+    mov r10, #0
+    mov r11, #0
+    mov r12, #0
+    mov lr, #0
+
+    msr cpsr, r2 @ clear CPSR (the bits we can clear)
+
+    bx r0 @ r0 contains code

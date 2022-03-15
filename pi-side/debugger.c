@@ -1,5 +1,7 @@
 #include "debugger.h"
 
+#define USER_MODE 0b10000
+
 void debugger_shell(uint32_t *regs) {
     while (1) {
         char line[512];
@@ -30,5 +32,12 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
     // if we did not inject the debugger code
 
     debugger_print("About to enter user code");
-    branchto(target_dst); // jump to user code
+
+    // setup breakpoint at target_dst
+
+    // flush regs, enter user mode
+
+    // prefetch flush
+
+    enter_user_mode(target_dst); // setup user mode and branch to target
 }
