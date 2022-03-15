@@ -67,6 +67,31 @@ int parse_int(char *expr) {
     return num * sign;
 }
 
+int parse_hex(char *expr) {
+    int sign = 1;
+    int base = 16;
+    if (expr[0] == '-') {
+        sign = -1;
+        expr++;
+    }
+    if (expr[0] == '0') {
+        if (expr[1] == 'x') {
+            base = 16;
+            expr += 2;
+        } else if (expr[1] == 'b') {
+            base = 2;
+            expr += 2;
+        }
+    }
+    uint32_t num = 0;
+    int next;
+    while ((next = find_in_s(expr[0], HEX)) != -1) {
+        num = num * base + next;
+        expr++;
+    }
+    return num * sign;
+}
+
 uint32_t parse_expr(char *expr, int get_addr, uint32_t *regs) {
     int n_indirects = 0; // if not addr, deref at least once
     for (; *expr == '*'; expr++) {
@@ -92,41 +117,4 @@ uint32_t parse_expr(char *expr, int get_addr, uint32_t *regs) {
         res = *(uint32_t *)res;
     }
     return res;
-}
-
-
-// returns 1 if we should return to the program
-int process_input(char *line, uint32_t *regs) {
-    char *cmd = parse_token(&line);
-    switch (cmd[0]) {
-        case 'c':
-            return 1;
-        case 'p':;
-            char format = line[1];
-            char *expr = parse_token(&line);
-            uint32_t val = parse_expr(expr, 0, regs);
-            debugger_print(expr);
-            uart_puts(" = ");
-            uart_printf(cmd[1], val);
-            uart_putc('\n');
-            break;
-        case 'k':;
-            char *expr1 = parse_token(&line);
-            uint32_t *dst = (uint32_t *)parse_expr(expr1, 1, regs);
-            char *expr2 = parse_token(&line);
-            uint32_t src = parse_expr(expr2, 0, regs);
-            *dst = src;
-            debugger_print("Wrote ");
-            uart_printf('x', src);
-            uart_puts(" to *");
-            uart_printf('x', (uint32_t)dst);
-            uart_putc('\n');
-            break;
-        case 'q':
-            debugger_println("DONE!!!");
-            rpi_reboot();
-        default:
-            debugger_println("Invalid command. Use 'h' for a list of commands");
-    }
-    return 0;
 }

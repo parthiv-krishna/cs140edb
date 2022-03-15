@@ -31,6 +31,7 @@ void watchpt_print_active(void) {
             uart_printf('d', i);
             uart_puts(": ");
             uart_printf('x', watchpts[i]);
+            uart_puts("\n");
         }
     }
 }
@@ -48,7 +49,6 @@ int breakpt_get_id(uint32_t *addr) {
 
 int watchpt_get_id(uint32_t *addr) {
     for (int i = 0; i <= WATCHPT_MAX; i++) {
-        uart_printf('d', i);
         if ((watchpts_mask >> i) & 1) {
             if (watchpts[i] == addr) {
                 return i;

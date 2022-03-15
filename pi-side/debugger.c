@@ -1,5 +1,72 @@
 #include "debugger.h"
 
+// returns 1 if we should return to the program
+int process_input(char *line, uint32_t *regs) {
+    char *cmd = parse_token(&line);
+    char *expr;
+    switch (cmd[0]) {
+        case 'c':
+            return 1;
+        case 'p':;
+            char format = line[1];
+            expr = parse_token(&line);
+            uint32_t val = parse_expr(expr, 0, regs);
+            debugger_print(expr);
+            uart_puts(" = ");
+            uart_printf(cmd[1], val);
+            uart_putc('\n');
+            break;
+        case 'k':
+            expr = parse_token(&line);
+            uint32_t *dst = (uint32_t *)parse_expr(expr, 1, regs);
+            expr = parse_token(&line);
+            uint32_t src = parse_expr(expr, 0, regs);
+            *dst = src;
+            debugger_print("Wrote ");
+            uart_printf('x', src);
+            uart_puts(" to *");
+            uart_printf('x', (uint32_t)dst);
+            uart_putc('\n');
+            break;
+        case 'b':
+            expr = parse_token(&line);
+            uint32_t *break_addr = (uint32_t *) parse_hex(expr);
+            if (breakpt_set(break_addr)) {
+                debugger_print("Successfully set breakpoint #");
+                int id = breakpt_get_id(break_addr);
+                uart_printf('d', id);
+                uart_puts(" to ");
+            } else {
+                debugger_print("Unable to set breakpoint on ");
+            }
+            uart_printf('x', (uint32_t) break_addr);
+            uart_putc('\n');
+            breakpt_print_active();
+            break;
+        case 'w':
+            expr = parse_token(&line);
+            uint32_t *watch_addr = (uint32_t *)parse_hex(expr);
+            if (watchpt_set(watch_addr)) {
+                debugger_print("Successfully set watchpoint #");
+                int id = watchpt_get_id(watch_addr);
+                uart_printf('d', id);
+                uart_puts(" to ");
+            } else {
+                debugger_print("Unable to set watchpoint on ");
+            }
+            uart_printf('x', (uint32_t) watch_addr);
+            uart_putc('\n');
+            watchpt_print_active();
+            break;
+        case 'q':
+            debugger_println("DONE!!!");
+            rpi_reboot();
+        default:
+            debugger_println("Invalid command. Use 'h' for a list of commands");
+    }
+    return 0;
+}
+
 void debugger_shell(uint32_t *regs) {
     while (1) {
         char line[512];
@@ -48,9 +115,8 @@ void debugger_main(uint32_t *target_dst, uint32_t *target_src) {
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst
-    for (int i = 2; i < 5; i ++) {
-        breakpt_set(target_dst + i);
-    }
+    breakpt_set(target_dst);
+
 
     prefetch_flush();
 
