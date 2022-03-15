@@ -44,13 +44,12 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
 
     // user program is wherever the bootloader would have put it
     // if we did not inject the debugger code
-    debugger_shell(regs);
     init_interrupts();
 
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst
-    // breakpt_set0(target_dst);
+    breakpt_set0(target_dst);
 
     prefetch_flush();
 

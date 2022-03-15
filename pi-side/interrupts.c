@@ -1,13 +1,6 @@
 #include "mini-rpi.h"
 #include "debugger.h"
 
-void put_hex(unsigned x) {
-    while (x) {
-        uart_putc((x % 10) + '0');
-        x /= 10;
-    }
-}
-
 void init_interrupts() {
     dev_barrier();
     extern uint32_t _interrupt_table;
@@ -16,6 +9,8 @@ void init_interrupts() {
     dev_barrier();
     void *result = 0;
     asm volatile ("MRC p15, 0, %0, c12, c0, 0" : "=r" (result) : :);
+    assert(result == int_table);
+    uart_print_int(int_table, 16);
 }
 
 

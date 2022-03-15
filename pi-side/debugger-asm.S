@@ -5,10 +5,10 @@
     mov sp, #INT_STACK; \
     sub sp, sp, #(17 * 4); \
     stmia sp, {r0-r14}^; \
-    str lr, [sp, #(15 * 4)]; @ store lr at array[15] \
+    str lr, [sp, #(15 * 4)]; \
     mov r0, sp; \
     mrs r1, spsr; \
-    str r1, [sp, #(16 * 4)]; @ store spsr at array[16] \
+    str r1, [sp, #(16 * 4)]; \
     bl function; \
     ldmia sp, {r0-r15}^
 
