@@ -42,6 +42,7 @@ void uart_printf(char fmt, uint32_t val) {
         uart_print_int(val, 2);
         break;
     case 'd':
+    case 'i':
         if ((int) val < 0) {
             uart_putc('-');
             val *= -1;
@@ -167,6 +168,7 @@ int process_input(char *line, uint32_t *regs) {
             uart_puts(" to *");
             uart_printf('x', (uint32_t)dst);
             uart_putc('\n');
+            break;
         default:
             debugger_println("Invalid command. Use 'h' for a list of commands");
     }
@@ -208,15 +210,20 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
     // user program is wherever the bootloader would have put it
     // if we did not inject the debugger code
     debugger_shell(regs);
+    init_interrupts();
+
+    breakpt_watchpt_init();
+
+    // setup breakpoint at target_dst
+    // breakpt_set0(target_dst);
+
+    prefetch_flush();
+
+    // user program is wherever the bootloader would have put it
+    // if we did not inject the debugger code
 
     debugger_print("About to enter user code");
 
-    // setup breakpoint at target_dst
-
     // flush regs, enter user mode
-
-    // prefetch flush
-
     enter_user_mode(target_dst); // setup user mode and branch to target
-    branchto(target_dst); // jump to user code
 }

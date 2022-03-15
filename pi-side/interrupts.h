@@ -3,7 +3,7 @@
 
 #include "debugger.h"
 
-void init_interupts();
+void init_interrupts();
 
 void undefined_instruction_vector(uint32_t *regs);
 void prefetch_abort_vector(uint32_t *regs);
