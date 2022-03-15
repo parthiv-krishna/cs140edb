@@ -28,17 +28,16 @@ void prefetch_abort_vector(uint32_t *regs) {
         uart_putc('\n');        
         breakpt_disable(pc);
     } else {
-        debugger_print("Breakpoint #");
-        uart_printf('d', id);
-        uart_puts(" triggered at pc=");
+        if (id != -1) {
+            debugger_print("Breakpoint #");
+            uart_printf('d', id);
+            uart_puts(" triggered at ");
+        }
+        uart_puts("pc=");
         uart_printf('x', (uint32_t)pc);
         uart_putc('\n');
 
         breakpt_disable(pc);
-
-        debugger_println("Active breakpoints:");
-        breakpt_print_active();
-
     }
     debugger_shell(regs);
 }

@@ -1,5 +1,64 @@
 #include "debugger.h"
 
+void handle_breakpt(uint32_t *break_addr) {
+    int existing_id = breakpt_get_id(break_addr);
+    if (existing_id == -1) {
+        int id = breakpt_set(break_addr);
+        if (id > -1) {
+            debugger_print("Successfully set breakpoint #");
+            uart_printf('d', id);
+            uart_puts(" to ");
+        } else {
+            debugger_print("Unable to set breakpoint on ");
+        }
+    } else {
+        uart_puts("Breakpoint #");
+        uart_printf('d', existing_id);
+        uart_puts(" already contains ");
+    }
+    uart_printf('x', (uint32_t) break_addr);
+    uart_putc('\n'); 
+}
+
+void handle_watchpt(uint32_t *watch_addr) {
+    int existing_id = watchpt_get_id(watch_addr);
+    if (existing_id == -1) {
+        int id = watchpt_set(watch_addr);
+        if (id > -1) {
+            debugger_print("Successfully set watchpoint #");
+            uart_printf('d', id);
+            uart_puts(" to ");
+        } else {
+            debugger_print("Unable to set watchpoint on ");
+        }
+    } else {
+        uart_puts("Watchpoint #");
+        uart_printf('d', existing_id);
+        uart_puts(" already contains ");
+    }
+    uart_printf('x', (uint32_t) watch_addr);
+    uart_putc('\n');
+}
+
+
+void list_pts(char c) {
+    switch (c) {
+        case 'b':
+            debugger_println("Active breakpoints:");
+            breakpt_print_active();
+            break;
+        case 'w':
+            debugger_println("Active watchpoints:");
+            watchpt_print_active();
+            break;
+        default:
+            debugger_print("Unrecognized list command `");
+            uart_putc(c);
+            uart_puts("`. Choose b or w");
+            break;
+    }
+}
+
 // returns 1 if we should return to the program
 int process_input(char *line, uint32_t *regs) {
     char *cmd = parse_token(&line);
@@ -32,32 +91,12 @@ int process_input(char *line, uint32_t *regs) {
         case 'b':
             expr = parse_token(&line);
             uint32_t *break_addr = (uint32_t *) parse_expr(expr, 0, regs);
-            if (breakpt_set(break_addr)) {
-                debugger_print("Successfully set breakpoint #");
-                int id = breakpt_get_id(break_addr);
-                uart_printf('d', id);
-                uart_puts(" to ");
-            } else {
-                debugger_print("Unable to set breakpoint on ");
-            }
-            uart_printf('x', (uint32_t) break_addr);
-            uart_putc('\n');
-            breakpt_print_active();
+            handle_breakpt(break_addr);
             break;
         case 'w':
             expr = parse_token(&line);
             uint32_t *watch_addr = (uint32_t *)parse_expr(expr, 0, regs);
-            if (watchpt_set(watch_addr)) {
-                debugger_print("Successfully set watchpoint #");
-                int id = watchpt_get_id(watch_addr);
-                uart_printf('d', id);
-                uart_puts(" to ");
-            } else {
-                debugger_print("Unable to set watchpoint on ");
-            }
-            uart_printf('x', (uint32_t) watch_addr);
-            uart_putc('\n');
-            watchpt_print_active();
+            handle_watchpt(watch_addr);
             break;
         case 's':
             breakpt_singlestep_start(regs[15]);
@@ -65,6 +104,9 @@ int process_input(char *line, uint32_t *regs) {
         case 'q':
             debugger_println("DONE!!!");
             rpi_reboot();
+        case 'l':
+            list_pts(cmd[1]);
+            break;
         default:
             debugger_println("Invalid command. Use 'h' for a list of commands");
     }
