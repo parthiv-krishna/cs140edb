@@ -27,4 +27,4 @@ done:
     @ now r1 contains original_code_end
     @ and we are at the place our linker expects us to be
     @ notmain(original_code_start, original_code_end)
-    ldr pc, =notmain
+    ldr pc, =debugger_main

@@ -26,7 +26,7 @@ void move_user_program(uint32_t *dst, uint32_t *src) {
     
 uint32_t regs[17] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 
-void notmain(uint32_t *target_dst, uint32_t *target_src) {
+void debugger_main(uint32_t *target_dst, uint32_t *target_src) {
     uint32_t sp;
     asm volatile("mov %0, pc" : "=r"(sp) : :);
     debugger_print("sp=");
@@ -49,7 +49,7 @@ void notmain(uint32_t *target_dst, uint32_t *target_src) {
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst
-    breakpt_set(target_dst);
+    // breakpt_set(target_dst);
 
     prefetch_flush();
 
