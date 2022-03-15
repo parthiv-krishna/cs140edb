@@ -80,23 +80,55 @@ coproc_mk(dscr, p14, 0, c0, c1, 0)
 
 // Instruction Fault Status Reg page 3-68
 coproc_mk(ifsr, p15, 0, c5, c0, 1) 
-// Breakpoint Control Reg 0 page 13-6
-coproc_mk(bcr0, p14, 0, c0, c0, 5)
 // Instruction Fault Addr Reg page 3-69
 coproc_mk(ifar, p15, 0, c6, c0, 2)
-// Breakpoint Value Reg 0 page 13-6
-coproc_mk(bvr0, p14, 0, c0, c0, 4)
 
 // Data Fault Status Reg page 3-66
 coproc_mk(dfsr, p15, 0, c5, c0, 0)
-// Watchpoint Control Reg 0 page 13-6
-coproc_mk(wcr0, p14, 0, c0, c0, 7)
 // Watchpoint Fault Addr Reg page 13-12
 coproc_mk(wfar, p14, 0, c0, c6, 0)
-// Watchpoint Value Reg 0 page 13-20
-coproc_mk(wvr0, p14, 0, c0, c0, 6)
 // Fault Addr Reg page 3-68
 coproc_mk(far, p15, 0, c6, c0, 0)
+
+/////////////////////////////////
+// somewhat cursed macro stuff //
+/////////////////////////////////
+
+typedef void (*set_func)(uint32_t);
+typedef uint32_t (*get_func)(void);
+
+// Breakpoint Control Reg 0 page 13-6
+// Breakpoint Value Reg 0 page 13-6
+#define breakpt_mk(n)                           \
+    coproc_mk(bcr ## n, p14, 0, c0, c ## n, 5)  \
+    coproc_mk(bvr ## n, p14, 0, c0, c ## n, 4)
+
+breakpt_mk(0)
+breakpt_mk(1)
+breakpt_mk(2)
+breakpt_mk(3)
+breakpt_mk(4)
+breakpt_mk(5)
+
+const set_func cp14_bcr_set[6] = {cp14_bcr0_set, cp14_bcr1_set, cp14_bcr2_set, cp14_bcr3_set, cp14_bcr4_set, cp14_bcr5_set};
+const get_func cp14_bcr_get[6] = {cp14_bcr0_get, cp14_bcr1_get, cp14_bcr2_get, cp14_bcr3_get, cp14_bcr4_get, cp14_bcr5_get};
+const set_func cp14_bvr_set[6] = {cp14_bvr0_set, cp14_bvr1_set, cp14_bvr2_set, cp14_bvr3_set, cp14_bvr4_set, cp14_bvr5_set};
+const get_func cp14_bvr_get[6] = {cp14_bvr0_get, cp14_bvr1_get, cp14_bvr2_get, cp14_bvr3_get, cp14_bvr4_get, cp14_bvr5_get};
+
+// Watchpoint Control Reg page 13-6
+// Watchpoint Value Reg page 13-20
+#define watchpt_mk(n)                           \
+    coproc_mk(wcr ## n, p14, 0, c0, c ## n, 7)  \
+    coproc_mk(wvr ## n, p14, 0, c0, c ## n, 6)
+
+watchpt_mk(0)
+watchpt_mk(1)
+
+const set_func cp14_wcr_set[2] = {cp14_wcr0_set, cp14_wcr1_set};
+const get_func cp14_wcr_get[2] = {cp14_wcr0_get, cp14_wcr1_get};
+const set_func cp14_wvr_set[2] = {cp14_wvr0_set, cp14_wvr1_set};
+const get_func cp14_wvr_get[2] = {cp14_wvr0_get, cp14_wvr1_get};
+
 
 // return 1 if enabled, 0 otherwise.  
 //    - we wind up reading the status register a bunch:
@@ -143,7 +175,7 @@ void cp14_disable() {
 
 
 int cp14_bcr0_is_enabled() {
-    uint32_t bcr0 = cp14_bcr0_get();
+    uint32_t bcr0 = cp14_bcr_get[0]();
     return bit_get(bcr0, BREAKPT_CTRL_EN);
 }
 
@@ -151,11 +183,11 @@ void cp14_bcr0_enable() {
     // 13-45
     
     // read the BCR
-    uint32_t bcr0 = cp14_bcr0_get();
+    uint32_t bcr0 = cp14_bcr_get[0]();
 
     // clear the enable breakpoint bit and write back
     bcr0 = bit_clr(bcr0, BREAKPT_CTRL_EN);
-    cp14_bcr0_set(bcr0);
+    cp14_bcr_set[0](bcr0);
 
     bpt_wpt_ctrl_t *bcr0_ptr = (bpt_wpt_ctrl_t *)&bcr0;
 
@@ -167,14 +199,14 @@ void cp14_bcr0_enable() {
     bcr0_ptr->sv_access = 0b11; // privileged and user
     bcr0_ptr->enable = 1;
 
-    cp14_bcr0_set(bcr0);
+    cp14_bcr_set[0](bcr0);
     prefetch_flush();
 }
 
 void cp14_bcr0_disable() {
-    uint32_t bcr0 = cp14_bcr0_get();
+    uint32_t bcr0 = cp14_bcr_get[0]();
     bcr0 = bit_clr(bcr0, BREAKPT_CTRL_EN); // disable 13-22
-    cp14_bcr0_set(bcr0);
+    cp14_bcr_set[0](bcr0);
     prefetch_flush();
 }
 
