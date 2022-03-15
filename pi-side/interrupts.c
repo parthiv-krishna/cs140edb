@@ -1,5 +1,4 @@
-#include "mini-rpi.h"
-#include "debugger.h"
+#include "interrupts.h"
 
 void init_interrupts() {
     dev_barrier();
@@ -19,13 +18,34 @@ void undefined_instruction_vector(uint32_t *regs) {
 }
 
 void prefetch_abort_vector(uint32_t *regs) {
-    debugger_println("breakpoint triggered? or single step");
+    uint32_t pc = regs[15];
+    int id = breakpt_get_id(pc);
+    debugger_print("Breakpoint #");
+    uart_printf('d', id);
+    uart_puts(" triggered at pc=");
+    uart_printf('x', pc);
+    uart_putc('\n');
+
+    debugger_println("Active breakpoints:");
+    breakpt_print_active();
+
     debugger_shell(regs);
+    breakpt_disable(pc);
 }
 
 void data_abort_vector(uint32_t *regs) {
-    debugger_println("watchpoint triggered");
+    uint32_t *addr = watchpt_fault_addr();
+    uint32_t *pc = watchpt_fault_pc();
+    uint32_t id = watchpt_get_id(addr);
+    debugger_print("Watchpoint #");
+    uart_printf('d', id);
+    uart_puts(" at ");
+    uart_printf('x', (uint32_t) addr);
+    uart_puts(" triggered by pc=");
+    uart_printf('x', (uint32_t) pc);
+    uart_putc('\n');
     debugger_shell(regs);
+    watchpt_disable(addr);
 }
 
 void interrupt_vector(uint32_t *regs) {

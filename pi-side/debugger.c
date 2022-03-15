@@ -1,4 +1,3 @@
-#include "mini-rpi.h"
 #include "debugger.h"
 
 void debugger_shell(uint32_t *regs) {
@@ -49,7 +48,9 @@ void debugger_main(uint32_t *target_dst, uint32_t *target_src) {
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst
-    // breakpt_set(target_dst);
+    for (int i = 2; i < 5; i ++) {
+        breakpt_set(target_dst + i);
+    }
 
     prefetch_flush();
 
