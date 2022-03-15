@@ -86,4 +86,9 @@ uint32_t *watchpt_fault_addr(void);
 void breakpt_set_helper(unsigned id, uint32_t *addr);
 void watchpt_set_helper(unsigned id, uint32_t *addr);
 
+uint32_t *breakpt_addr(unsigned id);
+int breakpt_is_active(unsigned id);
+uint32_t *watchpt_addr(unsigned id);
+int watchpt_is_active(unsigned id);
+
 #endif

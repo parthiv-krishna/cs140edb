@@ -1,14 +1,16 @@
 #include "breakpt-watchpt.h"
 
-// in .h so they can be printed
-uint32_t *breakpts[BREAKPT_MAX]; // single step is BREAKPT_MATCH -- no need to store
-uint32_t *watchpts[WATCHPT_MAX + 1];
-unsigned int breakpts_mask;
-unsigned int watchpts_mask;
-
-int find_first_available(unsigned int mask) {
+int breakpt_find_first_available() {
     int id = 0;
-    while ((mask >> id) & 1) {
+    while (breakpt_is_active(id)) {
+        id++;
+    }
+    return id;
+}
+
+int watchpt_find_first_available() {
+    int id = 0;
+    while (watchpt_is_active(id)) {
         id++;
     }
     return id;
@@ -17,10 +19,10 @@ int find_first_available(unsigned int mask) {
 void breakpt_print_active(void) {
     int printed = 0;
     for (int i = 0; i < BREAKPT_MAX; i++) {
-        if ((breakpts_mask >> i) & 1) {
+        if (breakpt_is_active(i)) {
             uart_printf('d', i);
             uart_puts(": ");
-            uart_printf('x', breakpts[i]);
+            uart_printf('x', breakpt_addr(i));
             uart_puts("\n");
             printed = 1;
         }
@@ -33,10 +35,10 @@ void breakpt_print_active(void) {
 void watchpt_print_active(void) {
     int printed = 0;
     for (int i = 0; i <= WATCHPT_MAX; i++) {
-        if ((watchpts_mask >> i) & 1) {
+        if (watchpt_is_active(i)) {
             uart_printf('d', i);
             uart_puts(": ");
-            uart_printf('x', watchpts[i]);
+            uart_printf('x', watchpt_addr(i));
             uart_puts("\n");
             printed = 1;
         }
@@ -48,8 +50,8 @@ void watchpt_print_active(void) {
 
 int breakpt_get_id(uint32_t *addr) {
     for (int i = 0; i < BREAKPT_MAX; i++) {
-        if ((breakpts_mask >> i) & 1) {
-            if (breakpts[i] == addr) {
+        if (breakpt_addr(i) == addr) {
+            if (breakpt_is_active(i)) {
                 return i;
             }
         }
@@ -59,8 +61,8 @@ int breakpt_get_id(uint32_t *addr) {
 
 int watchpt_get_id(uint32_t *addr) {
     for (int i = 0; i <= WATCHPT_MAX; i++) {
-        if ((watchpts_mask >> i) & 1) {
-            if (watchpts[i] == addr) {
+        if (watchpt_addr(i) == addr) {
+            if (watchpt_is_active(i)) {
                 return i;
             }
         }
@@ -70,33 +72,27 @@ int watchpt_get_id(uint32_t *addr) {
 
 // setup handlers: enable cp14
 void breakpt_watchpt_init(void) {
-    breakpts_mask = 0; // all start disabled
-    watchpts_mask = 0;
     cp14_enable();
 }
 
 // set a breakpoint on <addr> returns id or -1 if failed
 int breakpt_set(uint32_t *addr) {
-    int id = find_first_available(breakpts_mask);
+    int id = breakpt_find_first_available();
     // max reserved for singlestep
     if (id >= BREAKPT_MAX) {
         return -1;
     }
     breakpt_set_helper(id, addr);
-    breakpts[id] = addr;
-    breakpts_mask = bit_set(breakpts_mask, id);
     return id;
 }
 
 // set a watchpoint on <addr> returns id or -1 if failed
 int watchpt_set(uint32_t *addr) {
-    int id = find_first_available(watchpts_mask);
+    int id = watchpt_find_first_available();
     if (id > WATCHPT_MAX) {
         return -1;
     }
     watchpt_set_helper(id, addr);
-    watchpts[id] = addr;
-    watchpts_mask = bit_set(watchpts_mask, id);
     return id;
 }
 
@@ -106,7 +102,6 @@ void breakpt_disable(uint32_t *addr) {
         return;
     }
     cp14_bcr_disable(id);
-    breakpts_mask = bit_clr(breakpts_mask, id);
 }
 
 void watchpt_disable(uint32_t *addr) {
@@ -115,7 +110,6 @@ void watchpt_disable(uint32_t *addr) {
         return;
     }
     cp14_wcr_disable(id);
-    watchpts_mask = bit_clr(watchpts_mask, id);
 }
 
 void breakpt_singlestep_start(uint32_t caller_pc) {

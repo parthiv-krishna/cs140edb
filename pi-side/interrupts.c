@@ -53,8 +53,8 @@ void data_abort_vector(uint32_t *regs) {
     uart_puts(" triggered by pc=");
     uart_printf('x', (uint32_t) pc);
     uart_putc('\n');
-    debugger_shell(regs);
     watchpt_disable(addr);
+    debugger_shell(regs);
 }
 
 void interrupt_vector(uint32_t *regs) {
