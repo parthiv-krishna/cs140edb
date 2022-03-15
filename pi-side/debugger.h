@@ -6,9 +6,7 @@
 #include "interrupts.h"
 #include "breakpt-watchpt.h"
 
-void debugger_print(char *str);
-void debugger_println(char *str);
-
+#define USER_MODE 0b10000
 
 /**
  * @brief Called by debugger-start.S

@@ -33,40 +33,9 @@ void dev_barrier(void) {
     asm volatile ("mcr p15, 0, r0, c7, c10, 4" : : :);
 }
 
-//////////
-// UART //
-//////////
-int uart_gets(char *in, unsigned nbytes) {
-    int i = 0; 
-    for (; i < nbytes - 1; ++i) {
-        char byte = uart_getc();
-        if (byte == '\n') {
-            break;
-        }
-        in[i] = byte;
-    }
-    in[i] = 0;
-    return i;
-}
-
-void uart_puts(const char *s) {
-    uart_flush_tx(); // probably overkill
-    while (*s) {
-        uart_putc(*s++);
-    }
-    uart_flush_tx(); // make sure everything is sent 
-}
-
-void debugger_print(char *str) {
-    uart_puts("CS140EDB:");
-    uart_puts(str);
-}
-
-void debugger_println(char *str) {
-    debugger_print(str);
-    uart_putc('\n');
-    uart_flush_tx();
-}
+//////////////////
+// panic/reboot //
+//////////////////
 
 void panic(const char *msg) {
     uart_puts("PANIC: ");
