@@ -44,24 +44,36 @@ void handle_watchpt(uint32_t *watch_addr) {
 void handle_delete(char type, unsigned int id) {
     if (type == 'b') {
         if (id >= BREAKPT_MAX) {
-            debugger_print("Provided ID is too large");
+            debugger_print("Provided ID is too large\n");
+            return;
+        }
+        if (!breakpt_is_active(id)) {
+            debugger_print("Breakpoint #");
+            uart_printf('d', id);
+            uart_puts(" already disabled\n");
             return;
         }
         uint32_t *addr = breakpt_addr(id);
         breakpt_disable(addr);
-        debugger_print("Deleted breakpoint #");
+        debugger_print("Disabled breakpoint #");
         uart_printf('d', id);
         uart_puts(" at pc=");
         uart_printf('x', addr);
         uart_putc('\n');
     } else if (type == 'w') {
         if (id > WATCHPT_MAX) {
-            debugger_print("Provided ID is too large");
+            debugger_print("Provided ID is too large\n");
+            return;
+        }
+        if (!watchpt_is_active(id)) {
+            debugger_print("Watchpoint #");
+            uart_printf('d', id);
+            uart_puts(" already disabled\n");
             return;
         }
         uint32_t *addr = watchpt_addr(id);
         watchpt_disable(addr);
-        debugger_print("Deleted watchpoint #");
+        debugger_print("Disabled watchpoint #");
         uart_printf('d', id);
         uart_puts(" at ");
         uart_printf('x', addr);
@@ -69,7 +81,7 @@ void handle_delete(char type, unsigned int id) {
     } else {
         debugger_print("Unknown delete command `");
         uart_printf('c', type);
-        uart_puts("`. Choose b or w");
+        uart_puts("`. Choose b or w\n");
     }
 }
 
