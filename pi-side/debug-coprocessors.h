@@ -80,8 +80,8 @@ void cp14_wcr_enable(unsigned id);
 
 void cp14_wcr_disable(unsigned id);
 
-uint32_t watchpt_fault_pc(void);
-uint32_t watchpt_fault_addr(void);
+uint32_t *watchpt_fault_pc(void);
+uint32_t *watchpt_fault_addr(void);
 
 void breakpt_set_helper(unsigned id, uint32_t *addr);
 void watchpt_set_helper(unsigned id, uint32_t *addr);

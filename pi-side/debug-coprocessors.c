@@ -369,15 +369,15 @@ void cp14_wcr_disable(unsigned id) {
 }
 
 // Get watchpoint fault using WFAR
-uint32_t watchpt_fault_pc(void) {
+uint32_t *watchpt_fault_pc(void) {
     uint32_t wfar = cp14_wfar_get();
     // see 13-12:  WFAR contains the address of the instruction causing it plus 0x8.
-    return wfar - 0x8;
+    return (uint32_t *)(wfar - 0x8);
 }
 
-uint32_t watchpt_fault_addr(void) {
+uint32_t *watchpt_fault_addr(void) {
     uint32_t far = cp15_far_get();
-    return far;
+    return (uint32_t *)far;
 }
 
 
