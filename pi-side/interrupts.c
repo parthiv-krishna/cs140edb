@@ -18,19 +18,29 @@ void undefined_instruction_vector(uint32_t *regs) {
 }
 
 void prefetch_abort_vector(uint32_t *regs) {
-    uint32_t pc = regs[15];
+    // extern uint32_t __code_start__;
+    uint32_t *pc = (uint32_t *) regs[15];
     int id = breakpt_get_id(pc);
-    debugger_print("Breakpoint #");
-    uart_printf('d', id);
-    uart_puts(" triggered at pc=");
-    uart_printf('x', pc);
-    uart_putc('\n');
 
-    debugger_println("Active breakpoints:");
-    breakpt_print_active();
+    if (pc == (uint32_t *)0x8000) { // find a better way 
+        debugger_print("Ready to run user program at pc=");
+        uart_printf('x', (uint32_t)pc);
+        uart_putc('\n');        
+        breakpt_disable(pc);
+    } else {
+        debugger_print("Breakpoint #");
+        uart_printf('d', id);
+        uart_puts(" triggered at pc=");
+        uart_printf('x', (uint32_t)pc);
+        uart_putc('\n');
 
+        breakpt_disable(pc);
+
+        debugger_println("Active breakpoints:");
+        breakpt_print_active();
+
+    }
     debugger_shell(regs);
-    breakpt_disable(pc);
 }
 
 void data_abort_vector(uint32_t *regs) {
