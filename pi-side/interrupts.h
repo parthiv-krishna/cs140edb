@@ -2,6 +2,7 @@
 #define _INTERRUPTS_H_
 
 #include "debugger.h"
+#include "breakpt-watchpt.h"
 
 void init_interrupts();
 

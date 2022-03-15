@@ -5,6 +5,7 @@
 #include "uart.h"
 #include "interrupts.h"
 #include "breakpt-watchpt.h"
+#include "parse.h"
 
 #define USER_MODE 0b10000
 
