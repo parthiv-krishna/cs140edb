@@ -76,7 +76,7 @@ fn process_op(tty: &mut File) -> io::Result<u32> {
     })
 }
 
-fn check_data<S: AsRef<str> + Display>(expected: u32, recieved: u32, msg: S) {
+fn check_data<S: Display>(expected: u32, recieved: u32, msg: S) {
     if expected != recieved {
         panic!("{}. Expected {:X}, received {:X}", msg, expected, recieved);
     }
@@ -87,19 +87,12 @@ pub fn simple_boot(tty: &mut File, buf: &[u8]) -> io::Result<()> {
     println!("cs140edb: sending {} bytes, crc={:x}", buf.len(), crc);
     println!("waiting for start");
 
-    // loop {
-    //     println!("{:X}", get8(tty)?);
-    // }
-
     loop {
         let op = process_op(tty)?;
         if op == GET_PROG_INFO {
             break;
         }
-        println!(
-            "expected initial GET_PROG_INFO, got <{:X}>: discarding.",
-            op
-        );
+        println!("expected initial GET_PROG_INFO, got <{:X}>: discarding.", op);
         get8(tty)?;
     }
     put32(tty, PUT_PROG_INFO)?;
