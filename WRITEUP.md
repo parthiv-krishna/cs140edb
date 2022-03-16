@@ -24,6 +24,7 @@ q - quit the debugger and reboot the pi
 j - skip the current instruction (increment pc by 4)
 <expr> can be a register (r0, lr, spsr), or a number (128, 0x8000), or any number of dereferences (*r0, **0x8560)
 ```
+
 ## Problems
 
 The most difficult issues we faced while making this project were due to our very limited understanding of the code linking process. Specifically, we had to tackle the problem of making sure that all C code is run from the same memory address that it was linked to. The Raspberry Pi firmware loads programs to 0x8000 by default, so this is where most programs we work with expect to run. Thus, our bootloader also loads programs to 0x8000 (ostensibly, we can pass a different address to the bootloader, but in reality there is not much flexibility). Our solution to this involves a multistep process where 1) The debugger code and user code are concatenated and loaded to 0x8000, 2) the debugger copies itself to 0xFF8000 (arbitrary), 3) The debugger code, from 0xFF8000, copies the user code to 0x8000 to let it run.
