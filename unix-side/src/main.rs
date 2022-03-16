@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::env::args;
 use std::fs::File;
 use std::io::{Read, self};
@@ -21,14 +22,17 @@ fn create_file_buffer<P: AsRef<Path>>(in_file: P) -> io::Result<Vec<u8>> {
 
 fn main() {
     let argv: Vec<_> = args().skip(1).collect();
-
     let (tty_file, in_file) = match argv.len() {
-        1 => (find_tty_device_file().expect("Found 0 ttys"), &argv[0]),
-        2 => (argv[0].clone(), &argv[1]),
-        _ => panic!("Expected 1 or two arguments")
+        1 => (Cow::from(find_tty_device_file().expect("Found 0 ttys")), &argv[0]),
+        2 => (Cow::from(&argv[0]), &argv[1]),
+        _ => panic!("Expected one or two arguments")
     };
 
-    let mut tty = File::options().read(true).write(true).open(tty_file).expect("Failed to open tty");
+    let mut tty = File::options()
+        .read(true).write(true)
+        .open(tty_file.as_ref())
+        .expect("Failed to open tty");
+
     setup_tty(&tty).expect("Failed to setup tty");
 
     let buf = create_file_buffer(&in_file).expect("Failed to read input file");
