@@ -61,7 +61,7 @@ fn process_op(tty: &mut File) -> io::Result<u32> {
         }
         let len = get32(tty)? as usize;
         if len >= 512 {
-            panic!("Recieved susiciously long print string!");
+            panic!("Recieved suspiciously long print string!");
         }
         let mut buf = vec![0; len];
         read_exact(tty, &mut buf)?;
