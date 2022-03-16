@@ -6,6 +6,8 @@
 
 #include "mini-rpi.h"
 
+#define MAX_PIN 31
+
 // GPIO pin mappings for UART
 #define GPIO_TX 14
 #define GPIO_RX 15

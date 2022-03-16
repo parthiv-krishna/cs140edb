@@ -13,6 +13,45 @@ const char * HELP_STR = "\nh - print the commands and usage\n\n"
 "q - quit the debugger and reboot the pi\n\n"
 "<expr> can be a register (r0, lr, spsr), or a number (128, 0x8000), or any number of dereferences (*r0, **0x8560)";
 
+typedef uint32_t instruction_t;
+
+struct frame {
+    uint32_t *fp;
+    uint32_t *sp;
+    instruction_t *lr;
+    instruction_t *pc;
+};
+
+void backtrace(uint32_t* fp, instruction_t *call_site) {
+    
+    debugger_println("Backtrace:");
+    int i = 0;
+    while (1) {
+        uart_printf('d', i++);
+        uart_puts(": ");
+        uart_printf('x', call_site);
+        uart_puts(" at ");
+        if (fp == NULL) {
+            break;
+        }
+        struct frame *curr = (struct frame *)(fp - 3); // subtract 3 because fp points to the last field on the struct
+        instruction_t *func_start = curr->pc - 3; // subtract 2 for prefetching + 1 for the push instruction
+        uint32_t name_len = *(func_start - 1);
+        const uint32_t MASK = 0xFF000000;
+        if ((name_len & MASK) != MASK) { // invalid name
+            break;
+        }
+        char *name = (char*)(func_start - 1) - (name_len & (~MASK));
+        uart_puts(name);
+        uart_puts(" + ");
+        uart_printf('x', (call_site - func_start) * sizeof(instruction_t));
+        uart_putc('\n');
+        call_site = curr->lr - 1;
+        fp = curr->fp;
+    }
+    uart_puts("???\n");
+}
+
 void handle_breakpt(uint32_t *break_addr) {
     int existing_id = breakpt_get_id(break_addr);
     if (existing_id == -1) {
@@ -111,7 +150,7 @@ void list_pts(char c) {
         default:
             debugger_print("Unrecognized list command `");
             uart_putc(c);
-            uart_puts("`. Choose b or w");
+            uart_puts("`. Choose b or w\n");
             break;
     }
 }
@@ -129,9 +168,12 @@ int process_input(char *line, uint32_t *regs) {
             return 1;
         case 'j':
             regs[15] += sizeof(uint32_t);
-            debugger_print("Now at pc=");
+            debugger_print("Skipped to pc=");
             uart_printf('x', regs[15]);
             uart_putc('\n');
+            break;
+        case 't':
+            backtrace((uint32_t *)regs[11], (instruction_t *)regs[15]);
             break;
         case 'p':;
             char format = line[1];
@@ -169,12 +211,13 @@ int process_input(char *line, uint32_t *regs) {
             rpi_reboot();
         case 'h':
             debugger_println(HELP_STR);
-        case 'l':
-            list_pts(cmd[1]);
+        case 'l':;
+            expr = parse_token(&line);
+            list_pts(expr[0]);
             break;
         case 'd':
             expr = parse_token(&line);
-            handle_delete(expr[0], expr[1] - '0');
+            handle_delete(expr[0], parse_int(expr + 1));
             break;
         default:
             debugger_println("Invalid command. Use 'h' for a list of commands");
@@ -191,6 +234,7 @@ void debugger_shell(uint32_t *regs) {
             break;
         }
     }
+    clear_debug_jumper_event();
     uart_flush_tx();
 }
 
@@ -213,7 +257,7 @@ void debugger_main(uint32_t *target_dst, uint32_t *target_src) {
     // user program is wherever the bootloader would have put it
     // if we did not inject the debugger code
     init_interrupts();
-
+    init_debug_jumper();
     breakpt_watchpt_init();
 
     // setup breakpoint at target_dst

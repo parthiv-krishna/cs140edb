@@ -23,6 +23,7 @@ copy_loop_cond:
     b copy_loop                 @ continue 
 
 done:
+    cpsid ia
     mov sp, #INT_STACK
     @ now r1 contains original_code_end
     @ and we are at the place our linker expects us to be

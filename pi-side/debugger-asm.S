@@ -19,7 +19,7 @@ branchto:
 .globl enter_user_mode
 enter_user_mode:
 
-    cpsie ia, 0b10000 @ user mode, interrupts on (maybe need aborts?)
+    cpsie ia, 0b10000 @ user mode, interrupts on
     mov r1, #0
     mcr p15, 0, r1, c7, c5, 4 @ prefetch flush
 

@@ -34,6 +34,8 @@ void prefetch_abort_vector(uint32_t *regs) {
             debugger_print("Breakpoint #");
             uart_printf('d', id);
             uart_puts(" triggered at ");
+        } else {
+            debugger_print("Stepped to ");
         }
         uart_puts("pc=");
         uart_printf('x', (uint32_t)pc);
@@ -60,7 +62,14 @@ void data_abort_vector(uint32_t *regs) {
 }
 
 void interrupt_vector(uint32_t *regs) {
-    debugger_println("possibly interrupt line?");
+    if (was_debug_jumper_interrupt()) {
+        debugger_print("Debug jumper interrupt ");
+    } else {
+        debugger_print("Unknown interrupt ");
+    }
+    uart_puts("at pc=");
+    uart_printf('x', regs[15]);
+    uart_putc('\n');
     debugger_shell(regs);
 }
 
